@@ -1,5 +1,6 @@
 import Order from '../models/Order.js';
 import OrderItem from '../models/OrderItem.js';
+import { sendOrderUpdateEmail } from '../utils/emailService.js';
 
 // Create new order
 export const createOrder = async (req, res) => {
@@ -131,10 +132,16 @@ export const updateOrderStatus = async (req, res) => {
       id,
       { status },
       { new: true }
-    ).populate('items').populate('user', 'name email');
+    ).populate('items').populate('user', 'username email');
 
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });
+    }
+
+    // Send status update email
+    if (order.user && order.user.email) {
+      sendOrderUpdateEmail(order.user.email, order.orderNumber, status, order.user.username)
+        .catch(err => console.error('Failed to send order update email:', err));
     }
 
     res.json({

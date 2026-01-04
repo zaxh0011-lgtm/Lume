@@ -2,18 +2,9 @@ import jwt from 'jsonwebtoken';
 import User from '../models/User.js'
 import { generateAccessToken, generateRefreshToken } from '../utils/generateTokens.js';
 import bcrypt from 'bcryptjs'
-import nodemailer from 'nodemailer';
+import { sendOtpEmail } from '../utils/emailService.js';
 
 let refreshTokens = [];
-
-// Email Transporter
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
-});
 
 // Generate 6 digit OTP
 const generateOTP = () => {
@@ -39,12 +30,7 @@ export const register = async (req, res) => {
         existingUser.otpExpires = Date.now() + 10 * 60 * 1000; // 10 mins
         await existingUser.save();
 
-        await transporter.sendMail({
-          from: process.env.EMAIL_USER,
-          to: email,
-          subject: 'Lume - Verify your email',
-          text: `Your OTP is ${otp}. It expires in 10 minutes.`
-        });
+        await sendOtpEmail(email, otp);
 
         return res.status(200).json({
           message: "User exists but not verified. New OTP sent.",
@@ -70,12 +56,7 @@ export const register = async (req, res) => {
 
     // Send Email
     try {
-      await transporter.sendMail({
-        from: process.env.EMAIL_USER,
-        to: email,
-        subject: 'Lume - Verify your email',
-        text: `Your OTP is ${otp}. It expires in 10 minutes.`
-      });
+      await sendOtpEmail(email, otp);
     } catch (emailError) {
       console.error('Email send failed:', emailError);
       // Optional: Delete user if email fails? Or just let them retry.
@@ -245,12 +226,7 @@ export const forgotPassword = async (req, res) => {
     user.otpExpires = Date.now() + 10 * 60 * 1000; // 10 mins
     await user.save();
 
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: 'Lume - Reset your password',
-      text: `Your Password Reset OTP is ${otp}. It expires in 10 minutes.`
-    });
+    await sendOtpEmail(email, otp);
 
     return res.status(200).json({ message: "OTP sent to your email" });
 
