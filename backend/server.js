@@ -2,7 +2,6 @@ import express from 'express';
 import connectDB from './config/db.js'
 import 'dotenv/config';
 import authRoutes from './routes/authRoutes.js';
-import cors from 'cors';
 import productRoutes from './routes/productsRoutes.js'
 import verifyAccessToken from './middlewares/authMiddleware.js'
 import path from 'path'
@@ -13,36 +12,33 @@ const app = express();
 
 connectDB();
 
-// Debug request origin
+// Manual CORS Middleware
 app.use((req, res, next) => {
-  console.log(`Incoming: ${req.method} ${req.path} Origin: ${req.headers.origin}`);
+  const allowedOrigins = [
+    'https://lume-peach.vercel.app',
+    'https://lume-frontend.vercel.app',
+    'http://localhost:5173'
+  ];
+
+  const origin = req.headers.origin;
+
+  if (allowedOrigins.includes(origin) || !origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin || '*');
+  } else {
+    // Default to reflecting origin to be safe for now
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   next();
 });
-
-// Robust CORS with logging
-app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-
-    // Explicitly allow the frontend
-    const allowedOrigins = [
-      'https://lume-peach.vercel.app',
-      'http://localhost:5173'
-    ];
-
-    // Check if origin is allowed or if we want to allow all temporarily
-    if (allowedOrigins.includes(origin) || true) { // FORCE allow all for debugging
-      return callback(null, true);
-    } else {
-      console.log('Blocked by CORS:', origin);
-      return callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-}));
 
 
 
