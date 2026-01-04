@@ -16,7 +16,7 @@ const connectDB = async () => {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false, // Disable buffering to fail fast if no connection (prevents timeout hangs)
-      serverSelectionTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 30000, // Increased timeout for Vercel cold starts
       socketTimeoutMS: 45000,
     };
 
