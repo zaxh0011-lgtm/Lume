@@ -1,10 +1,16 @@
 import multer from 'multer';
 import path from 'path';
+import os from 'os';
 
 // Configure storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/'); // Create this folder in your backend root
+    // On Vercel (production), only /tmp is writable
+    if (process.env.NODE_ENV === 'production') {
+      cb(null, os.tmpdir());
+    } else {
+      cb(null, 'uploads/'); // Create this folder in your backend root
+    }
   },
   filename: (req, file, cb) => {
 
