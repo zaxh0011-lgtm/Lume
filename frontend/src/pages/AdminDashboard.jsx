@@ -77,15 +77,29 @@ const AdminDashboard = () => {
     setEditingProduct(null);
   };
 
-  // Handle file selection
+  // Handle file selection (Convert to Base64)
   const handleImageSelect = (e) => {
     const files = Array.from(e.target.files);
-    const oversizedFiles = files.filter(file => file.size > 10 * 1024 * 1024);
+
+    // Check size limit (3MB per file for MongoDB Base64 safety)
+    const oversizedFiles = files.filter(file => file.size > 3 * 1024 * 1024);
     if (oversizedFiles.length > 0) {
-      alert('Some files are too large. Maximum size is 10MB per file.');
+      alert('Images must be under 3MB.');
       return;
     }
-    setSelectedImages(files);
+
+    const readPromises = files.map(file => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result); // Base64 string
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    });
+
+    Promise.all(readPromises).then(base64Images => {
+      setSelectedImages(prev => [...prev, ...base64Images]);
+    }).catch(err => console.error("Error reading files", err));
   };
 
   // Remove selected image
@@ -93,39 +107,34 @@ const AdminDashboard = () => {
     setSelectedImages(prev => prev.filter((_, i) => i !== index));
   };
 
-  // Handle form submission with file upload
+  // Handle form submission (Send JSON with Base64)
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Create FormData for file upload
-    const formDataToSend = new FormData();
-
-    // Append product data
-    formDataToSend.append('name', formData.name);
-    formDataToSend.append('description', formData.description);
-    formDataToSend.append('price', formData.price);
-    formDataToSend.append('category', formData.category);
-    formDataToSend.append('scent', formData.scent);
-    formDataToSend.append('size', formData.size);
-    formDataToSend.append('burnTime', formData.burnTime);
-    formDataToSend.append('stockQuantity', formData.stockQuantity);
-
-    // Append images
-    selectedImages.forEach((image, index) => {
-      formDataToSend.append('images', image);
-    });
 
     let success = false;
 
     if (editingProduct) {
-      const productData = {
+      // Combine existing images (URLs) with new images (Base64)
+      const allImages = [...(editingProduct.images || []), ...selectedImages];
+
+      const payload = {
         ...formData,
+        images: allImages,
         price: parseFloat(formData.price),
         stockQuantity: parseInt(formData.stockQuantity)
       };
-      success = await updateProduct(editingProduct._id, productData);
+
+      success = await updateProduct(editingProduct._id, payload);
     } else {
-      success = await addProduct(formDataToSend);
+      // Create new product
+      const payload = {
+        ...formData,
+        images: selectedImages,
+        price: parseFloat(formData.price),
+        stockQuantity: parseInt(formData.stockQuantity)
+      };
+
+      success = await addProduct(payload);
     }
 
     if (success) {
@@ -348,7 +357,7 @@ const AdminDashboard = () => {
                     {selectedImages.map((image, index) => (
                       <div key={index} className="relative group">
                         <img
-                          src={URL.createObjectURL(image)}
+                          src={image}
                           alt="Preview"
                           className="w-20 h-20 object-cover rounded-lg shadow-sm"
                         />
