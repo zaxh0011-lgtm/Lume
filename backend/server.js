@@ -73,6 +73,7 @@ const PORT = process.env.PORT || 5000;
 // Global Error Handler
 app.use((err, req, res, next) => {
   console.error('Unhandled Error:', err);
+  console.log('Deployment Check: Wildcard CORS Mode Active'); // Verify deployment
 
   // Ensure CORS headers are sent even on error
   res.setHeader('Access-Control-Allow-Origin', '*');
