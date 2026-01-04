@@ -3,6 +3,7 @@ import User from '../models/User.js'
 import { generateAccessToken, generateRefreshToken } from '../utils/generateTokens.js';
 import bcrypt from 'bcryptjs'
 import { sendOtpEmail } from '../utils/emailService.js';
+import connectDB from '../config/db.js'; // Ensure connection is ready
 
 let refreshTokens = [];
 
@@ -13,8 +14,10 @@ const generateOTP = () => {
 
 //register
 export const register = async (req, res) => {
+  await connectDB();
   try {
     const { username, email, password } = req.body;
+    // ...
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -80,6 +83,7 @@ export const register = async (req, res) => {
 
 // Verify OTP
 export const verifyEmail = async (req, res) => {
+  await connectDB();
   try {
     const { email, otp } = req.body;
     const user = await User.findOne({ email });
@@ -125,7 +129,7 @@ export const verifyEmail = async (req, res) => {
 
 //login
 export const login = async (req, res) => {
-
+  await connectDB();
   try {
     const { email, password } = req.body;
 
