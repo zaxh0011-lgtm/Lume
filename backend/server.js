@@ -13,20 +13,36 @@ const app = express();
 
 connectDB();
 
+// Debug request origin
 app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  if (origin) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-  }
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS,POST,PUT,DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(200);
-  }
+  console.log(`Incoming: ${req.method} ${req.path} Origin: ${req.headers.origin}`);
   next();
 });
+
+// Robust CORS with logging
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+
+    // Explicitly allow the frontend
+    const allowedOrigins = [
+      'https://lume-peach.vercel.app',
+      'http://localhost:5173'
+    ];
+
+    // Check if origin is allowed or if we want to allow all temporarily
+    if (allowedOrigins.includes(origin) || true) { // FORCE allow all for debugging
+      return callback(null, true);
+    } else {
+      console.log('Blocked by CORS:', origin);
+      return callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
 
 
 
