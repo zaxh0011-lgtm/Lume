@@ -12,31 +12,17 @@ const app = express();
 
 connectDB();
 
-// Manual CORS Middleware
+// Debug logging
 app.use((req, res, next) => {
-  const allowedOrigins = [
-    'https://lume-peach.vercel.app',
-    'https://lume-frontend.vercel.app',
-    'http://localhost:5173'
-  ];
+  console.log(`Request: ${req.method} ${req.path}`);
+  next();
+});
 
-  const origin = req.headers.origin;
-
-  if (allowedOrigins.includes(origin) || !origin) {
-    res.setHeader('Access-Control-Allow-Origin', origin || '*');
-  } else {
-    // Default to reflecting origin to be safe for now
-    res.setHeader('Access-Control-Allow-Origin', origin);
-  }
-
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-
+// OPTIONS Handler (Headers are managed by Vercel edge)
+app.use((req, res, next) => {
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
-
   next();
 });
 
