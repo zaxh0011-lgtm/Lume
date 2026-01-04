@@ -43,8 +43,12 @@ app.use('/api/orders', orderRoutes);
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 import fs from 'fs';
 const uploadsDir = path.join(process.cwd(), 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
+try {
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+} catch (error) {
+  console.log('Skipping uploads dir creation (read-only fs)');
 }
 
 app.get('/api/debug/test-auth', verifyAccessToken, (req, res) => {
