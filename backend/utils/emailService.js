@@ -59,12 +59,23 @@ export const sendOtpEmail = async (to, otp) => {
     <p>If you didn't request this, please ignore this email.</p>
   `;
 
-  await transporter.sendMail({
-    from: `"Lume Atelier" <${process.env.EMAIL_USER}>`,
-    to,
-    subject: 'Lume - Verify Your Account',
-    html: getEmailLayout(content, 'Verify Account')
-  });
+  try {
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.error('Email credentials missing in environment variables');
+      throw new Error('Email configuration missing');
+    }
+
+    await transporter.sendMail({
+      from: `"Lume Atelier" <${process.env.EMAIL_USER}>`,
+      to,
+      subject: 'Lume - Verify Your Account',
+      html: getEmailLayout(content, 'Verify Account')
+    });
+    console.log('OTP Email sent to:', to);
+  } catch (error) {
+    console.error('Failed to send OTP email:', error);
+    throw error; // Re-throw to be handled by controller
+  }
 };
 
 // Send Order Update Email
