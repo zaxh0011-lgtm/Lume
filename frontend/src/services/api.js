@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://lume-backend-je3yzz1do-zaxhys-projects.vercel.app/api'
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://lume-backend-42mzs1l9q-zaxhys-projects.vercel.app/api'
 
 const api = axios.create({
   baseURL: API_BASE_URL,
