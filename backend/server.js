@@ -12,14 +12,15 @@ const app = express();
 
 connectDB();
 
-// Debug logging
+// Permissive CORS (Public API)
 app.use((req, res, next) => {
-  console.log(`Request: ${req.method} ${req.path}`);
-  next();
-});
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
 
-// OPTIONS Handler (Headers are managed by Vercel edge)
-app.use((req, res, next) => {
+  // Debug log
+  console.log(`${req.method} ${req.path} - Origin: ${req.headers.origin || 'unknown'}`);
+
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
@@ -74,11 +75,7 @@ app.use((err, req, res, next) => {
   console.error('Unhandled Error:', err);
 
   // Ensure CORS headers are sent even on error
-  const origin = req.headers.origin;
-  if (origin) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-  }
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
 
