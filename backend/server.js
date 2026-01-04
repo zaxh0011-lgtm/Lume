@@ -19,8 +19,7 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
 }));
 
-// Explicitly handle preflight requests (sometimes needed for Vercel)
-app.options('*', cors());
+
 
 app.use(express.json());
 
