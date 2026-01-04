@@ -14,14 +14,13 @@ const app = express();
 connectDB();
 
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'https://lume-peach.vercel.app',
-    process.env.FRONTEND_URL
-  ].filter(Boolean),
+  origin: true, // Allow any origin dynamically
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
 }));
+
+// Explicitly handle preflight requests (sometimes needed for Vercel)
+app.options('*', cors());
 
 app.use(express.json());
 
