@@ -73,9 +73,10 @@ const Cart = () => {
                 <div className="w-24 h-24 bg-secondary-bg rounded-md flex items-center justify-center text-accent-sage flex-shrink-0">
                   {item.images && item.images[0] ? (
                     <img
-                      src={item.images[0].startsWith('http')
-                        ? item.images[0]
-                        : `${(import.meta.env.VITE_API_URL || 'https://backend-nine-pi-24.vercel.app/api').replace('/api', '')}/${item.images[0]}`
+                      src={
+                        item.images[0].startsWith('http') || item.images[0].startsWith('data:')
+                          ? item.images[0]
+                          : `${(import.meta.env.VITE_API_URL || 'https://backend-nine-pi-24.vercel.app/api').replace('/api', '')}/${item.images[0]}`
                       }
                       alt={item.name}
                       onError={(e) => { e.target.onerror = null; e.target.src = 'https://placehold.co/100x100/eaddcf/5c4033?text=N/A'; }}

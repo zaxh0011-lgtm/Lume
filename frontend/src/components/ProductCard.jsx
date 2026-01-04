@@ -17,9 +17,10 @@ const ProductCard = ({ product, onEdit, onDelete, showAdminActions = false }) =>
       <div className='relative h-64 overflow-hidden bg-gray-50'>
         {product.images && product.images.length > 0 ? (
           <img
-            src={product.images[0].startsWith('http')
-              ? product.images[0]
-              : `${(import.meta.env.VITE_API_URL || 'https://backend-nine-pi-24.vercel.app/api').replace('/api', '')}/${product.images[0]}`
+            src={
+              product.images[0].startsWith('http') || product.images[0].startsWith('data:')
+                ? product.images[0]
+                : `${(import.meta.env.VITE_API_URL || 'https://backend-nine-pi-24.vercel.app/api').replace('/api', '')}/${product.images[0]}`
             }
             alt={product.name}
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
