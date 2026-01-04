@@ -17,6 +17,7 @@ const adminMiddleware = async (req, res, next) => {
     }
 
     if (user.role !== 'admin') {
+      console.log(`Admin Access Denied: User ${user.email} is ${user.role}`);
       return res.status(403).json({ message: 'Admin access required' });
     }
 
