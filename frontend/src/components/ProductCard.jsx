@@ -17,9 +17,14 @@ const ProductCard = ({ product, onEdit, onDelete, showAdminActions = false }) =>
       <div className='relative h-64 overflow-hidden bg-gray-50'>
         {product.images && product.images.length > 0 ? (
           <img
-            src={`http://localhost:5000/${product.images[0]}`}
+            src={product.images[0].startsWith('http')
+              ? product.images[0]
+              : `${(import.meta.env.VITE_API_URL || 'https://backend-nine-pi-24.vercel.app/api').replace('/api', '')}/${product.images[0]}`
+            }
             alt={product.name}
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            // Fallback for broken Vercel uploads
+            onError={(e) => { e.target.onerror = null; e.target.src = 'https://placehold.co/600x400/eaddcf/5c4033?text=Image+Not+Available'; }}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-300">

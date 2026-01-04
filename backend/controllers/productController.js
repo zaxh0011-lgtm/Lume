@@ -27,7 +27,17 @@ export const createProduct = async (req, res) => {
       });
     }
 
-    const images = req.files ? req.files.map(file => file.path) : [];
+    let images = [];
+    if (req.files && req.files.length > 0) {
+      images = req.files.map(file => file.path);
+    }
+
+    // Support URL strings (if files failed or user provided URLs)
+    if (req.body.images) {
+      const bodyImages = Array.isArray(req.body.images) ? req.body.images : [req.body.images];
+      // Combine unique
+      images = [...new Set([...images, ...bodyImages])];
+    }
 
     const product = await Product.create({
       name,

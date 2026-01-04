@@ -72,7 +72,15 @@ const Cart = () => {
                 {/* Image Placeholder or Actual Image */}
                 <div className="w-24 h-24 bg-secondary-bg rounded-md flex items-center justify-center text-accent-sage flex-shrink-0">
                   {item.images && item.images[0] ? (
-                    <img src={`http://localhost:5000/${item.images[0]}`} alt={item.name} className="w-full h-full object-cover rounded-md" />
+                    <img
+                      src={item.images[0].startsWith('http')
+                        ? item.images[0]
+                        : `${(import.meta.env.VITE_API_URL || 'https://backend-nine-pi-24.vercel.app/api').replace('/api', '')}/${item.images[0]}`
+                      }
+                      alt={item.name}
+                      onError={(e) => { e.target.onerror = null; e.target.src = 'https://placehold.co/100x100/eaddcf/5c4033?text=N/A'; }}
+                      className="w-full h-full object-cover rounded-md"
+                    />
                   ) : (
                     <i className={`fa-solid ${item.isCustom ? 'fa-wand-magic-sparkles' : 'fa-candle-holder'} text-2xl`}></i>
                   )}
