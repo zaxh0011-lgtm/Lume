@@ -169,8 +169,16 @@ export const login = async (req, res) => {
       refreshToken
     })
   } catch (error) {
-    return res.status(400).json({
-      message: "Error while login",
+    console.error("Login Error:", error);
+    // Differentiate between logic errors and system errors
+    if (error.name === 'MongooseServerSelectionError' || error.message.includes('buffering timed out')) {
+      return res.status(500).json({
+        message: "Database connection failed. Please ensure MongoDB Atlas Network Access allows 0.0.0.0/0.",
+        error: error.message
+      });
+    }
+    return res.status(500).json({
+      message: "Server error during login",
       error: error.message
     })
   }
