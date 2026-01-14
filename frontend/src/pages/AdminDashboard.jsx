@@ -537,7 +537,7 @@ const AdminDashboard = () => {
                   value={customizationForm.price}
                   onChange={(e) => setCustomizationForm(prev => ({ ...prev, price: e.target.value }))}
                   placeholder="0"
-                  className="input-classic bg-white pl-10"
+                  className="input-classic bg-white pl-14"
                   required
                 />
               </div>

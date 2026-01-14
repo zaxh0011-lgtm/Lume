@@ -283,7 +283,7 @@ const Customize = () => {
                 <h3 className="sub text-xs uppercase tracking-[0.2em] font-bold mb-6 flex items-center gap-3 text-gray-400">
                   <span className="w-8 h-[1px] bg-accent-gold"></span> Step 01: The Vessel
                 </h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-4 gap-4">
                   {customizations.shapes.map(shape => (
                     <button
                       key={shape._id}
