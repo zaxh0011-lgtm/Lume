@@ -258,8 +258,9 @@ const Customize = () => {
                 <ambientLight intensity={0.7} />
                 <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} castShadow />
                 <pointLight position={[-10, -10, -10]} intensity={0.5} />
-                {/* Environment for reflections */}
-                <Environment preset="city" />
+                {/* Environment for reflections - Commented out due to CDN timeouts causing crashes 
+                <Environment preset="city" /> 
+                */}
                 <group position={[0, -1, 0]}>
                   <Candle3D
                     shape={selectedOptions.shape}

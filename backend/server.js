@@ -10,21 +10,27 @@ import orderRoutes from './routes/orderRoutes.js'; // ADD THIS
 
 const app = express();
 
-connectDB();
-
-// Permissive CORS (Public API)
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-
-  // Debug log
-  console.log(`${req.method} ${req.path} - Origin: ${req.headers.origin || 'unknown'}`);
-
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+// Connect to DB on every request (Vercel Optimization)
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    console.error('Database connection failed:', error);
+    res.status(500).json({ message: 'Database query failed' });
   }
-  next();
+});
+res.setHeader('Access-Control-Allow-Origin', '*');
+res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+
+// Debug log
+console.log(`${req.method} ${req.path} - Origin: ${req.headers.origin || 'unknown'}`);
+
+if (req.method === 'OPTIONS') {
+  return res.status(200).end();
+}
+next();
 });
 
 
