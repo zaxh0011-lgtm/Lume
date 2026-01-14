@@ -284,19 +284,19 @@ const Customize = () => {
                 <h3 className="sub text-xs uppercase tracking-[0.2em] font-bold mb-6 flex items-center gap-3 text-gray-400">
                   <span className="w-8 h-[1px] bg-accent-gold"></span> Step 01: The Vessel
                 </h3>
-                <div className="grid grid-cols-4 gap-4">
+                <div className="grid grid-cols-4 gap-2">
                   {customizations.shapes.map(shape => (
                     <button
                       key={shape._id}
                       onClick={() => handleOptionChange('shape', shape.value)}
-                      className={`p-6 rounded-sm border transition-all duration-300 flex flex-col items-center gap-3 group relative overflow-hidden ${selectedOptions.shape === shape.value
+                      className={`p-3 rounded-sm border transition-all duration-300 flex flex-col items-center gap-2 group relative overflow-hidden ${selectedOptions.shape === shape.value
                         ? 'border-accent-gold bg-primary-bg shadow-inner'
                         : 'border-gray-100 hover:border-accent-sage hover:shadow-lg bg-white'
                         }`}
                     >
-                      <span className={`font-main text-lg transition-colors ${selectedOptions.shape === shape.value ? 'text-accent-dark' : 'text-gray-600'}`}>{shape.name}</span>
+                      <span className={`font-main text-xs transition-colors ${selectedOptions.shape === shape.value ? 'text-accent-dark' : 'text-gray-600'}`}>{shape.name}</span>
                       {/* Visual indicator (optional icon map could go here) */}
-                      {shape.price > 0 && <span className="text-[10px] uppercase font-bold text-accent-gold tracking-widest">+ Rs. {shape.price}</span>}
+                      {shape.price > 0 && <span className="text-[9px] uppercase font-bold text-accent-gold tracking-widest">+ Rs. {shape.price}</span>}
                     </button>
                   ))}
                 </div>
